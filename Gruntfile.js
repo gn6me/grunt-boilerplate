@@ -1,23 +1,34 @@
 module.exports = function(grunt) {
 
-    // 1. All configuration goes here 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
 
-        concat: {   
-            dist: {
-                src: [
-                    'js/libs/*.js', // All JS in the libs folder
-                ],
-                dest: 'js/build/production.js',
+        jshint: {
+            files: ['Gruntfile.js','js/libs/*.js']
+            options: {
+                globals: {
+                    jQuery: true
+                }
             }
         },
 
+        concat: {
+            js: {
+                dist: {
+                    src: ['js/libs/*.js']
+                    dest: 'js/build/production.js',
+                },
+
+            },
+        },
+
         uglify: {
-            build: {
-                src: 'js/build/production.js',
-                dest: 'js/production.min.js'
-            }
+            js: {
+                build: {
+                    src: 'js/build/production.js',
+                    dest: 'js/production.min.js',
+                },
+            },
         },
 
         sass: {
@@ -32,6 +43,13 @@ module.exports = function(grunt) {
         },
 
         watch: {
+            jshint: {
+                files: ['<%= jshint.files %>'],
+                tasks: ['jshint'],
+                options: {
+                    spawn: false,
+                },
+            },
             scripts: {
                 files: ['js/libs/*.js'],
                 tasks: ['concat', 'uglify'],
@@ -50,14 +68,8 @@ module.exports = function(grunt) {
 
     });
 
-    // 3. Where we tell Grunt we plan to use this plug-in.
-    grunt.loadNpmTasks('grunt-contrib-concat');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.loadNpmTasks('grunt-contrib-sass');
+    require('load-grunt-tasks')(grunt);
 
-
-    // 4. Where we tell Grunt what to do when we type "grunt" into the terminal.
-    grunt.registerTask('default', ['concat', 'uglify', 'sass', 'watch']);
+    grunt.registerTask('default', ['jshint','concat', 'uglify', 'sass', 'watch']);
 
 };
